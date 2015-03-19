@@ -47,7 +47,6 @@ public class TrophyHeads extends JavaPlugin implements Listener {
 
     public static String LOG_HEADER;
     static final Logger log = Logger.getLogger("Minecraft");
-    private static Random randomGenerator;
     private File pluginFolder;
     private File configFile;
     private static final ArrayList<String> deathTypes = new ArrayList<String>();
@@ -57,7 +56,7 @@ public class TrophyHeads extends JavaPlugin implements Listener {
     private static boolean sneakPunchInfo = true;
     private static boolean noBreak = true;
     private static final CaseInsensitiveMap<List<String>> itemsRequired = new CaseInsensitiveMap<List<String>>();
-    private static final CaseInsensitiveMap<Integer> dropChances = new CaseInsensitiveMap<Integer>();
+    private static final CaseInsensitiveMap<Double> dropChances = new CaseInsensitiveMap<Double>();
     private static final CaseInsensitiveMap<String> customSkins = new CaseInsensitiveMap<String>();
     private static final CaseInsensitiveMap<String> skullMessages = new CaseInsensitiveMap<String>();
     private static final ArrayList<String> infoBlackList = new ArrayList<String>();
@@ -66,7 +65,6 @@ public class TrophyHeads extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         LOG_HEADER = "[" + this.getName() + "]";
-        randomGenerator = new Random();
         pluginFolder = getDataFolder();
         configFile = new File(pluginFolder, "config.yml");
         createConfig();
@@ -233,7 +231,7 @@ public class TrophyHeads extends JavaPlugin implements Listener {
         if (!player.hasPermission("trophyheads.drop")) {
             return;
         }
-        if (randomGenerator.nextInt(100) >= dropChances.get(EntityType.PLAYER.toString())) {
+        if (Math.random() >= dropChances.get(EntityType.PLAYER.toString())) {
             return;
         }
 
@@ -344,7 +342,7 @@ public class TrophyHeads extends JavaPlugin implements Listener {
 
         if (et.equals(EntityType.SKELETON)) {
             if (((Skeleton) e).getSkeletonType().equals(SkeletonType.NORMAL)) {
-                if (randomGenerator.nextInt(100) >= dropChances.get(et.toString())) {
+                if (Math.random() >= dropChances.get(et.toString())) {
                     return;
                 }
                 sti = 0;
@@ -352,17 +350,17 @@ public class TrophyHeads extends JavaPlugin implements Listener {
                 return;
             }
         } else if (et.equals(EntityType.ZOMBIE)) {
-            if (randomGenerator.nextInt(100) >= dropChances.get(et.toString())) {
+            if (Math.random() >= dropChances.get(et.toString())) {
                 return;
             }
             sti = 2;
         } else if (et.equals(EntityType.CREEPER)) {
-            if (randomGenerator.nextInt(100) >= dropChances.get(et.toString())) {
+            if (Math.random() >= dropChances.get(et.toString())) {
                 return;
             }
             sti = 4;
         } else if (dropChances.containsKey(et.toString())) {
-            if (randomGenerator.nextInt(100) >= dropChances.get(et.toString())) {
+            if (Math.random() >= dropChances.get(et.toString())) {
                 return;
             }
             sti = 3;
@@ -415,7 +413,7 @@ public class TrophyHeads extends JavaPlugin implements Listener {
         debugEnabled = getConfig().getBoolean("debug-enabled");
         logDebug("Debug enabled");
 
-        dropChances.put(EntityType.PLAYER.toString(), getConfig().getInt("drop-chance"));
+        dropChances.put(EntityType.PLAYER.toString(), getConfig().getDouble("drop-chance"));
         logDebug("Chance to drop head: " + dropChances.get(EntityType.PLAYER.toString()) + "%");
 
         playerSkin = getConfig().getBoolean("player-skin");
@@ -461,7 +459,7 @@ public class TrophyHeads extends JavaPlugin implements Listener {
             }
 
             logDebug("  Type: " + et.name());
-            int dropChance = getConfig().getInt("custom-heads." + monsterName + ".drop-chance", 0);
+            double dropChance = getConfig().getDouble("custom-heads." + monsterName + ".drop-chance", 0);
             List<String> items = getConfig().getStringList("custom-heads." + monsterName + ".items-required");
             if (items.isEmpty()) {
                 items.add("ANY");
